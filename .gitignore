@@ -3,3 +3,4 @@
 /backend/__pycache__
 tim_key
 *.log
+*.pyc
