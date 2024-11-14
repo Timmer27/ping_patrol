@@ -5,7 +5,8 @@ from config import settings
 
 def get_connection():
     # Set up an SSH tunnel
-    print('(settings.SSH_HOST, int(settings.SSH_PORT)', (settings.SSH_HOST, settings.SSH_PORT))
+    # print('(settings.SSH_HOST, int(settings.SSH_PORT) =======================>',
+    #       (settings.SSH_HOST, settings.SSH_PORT, settings.SSH_PRIVATE_KEY))
     server = SSHTunnelForwarder(
         (settings.SSH_HOST, int(settings.SSH_PORT)),
         ssh_username=settings.SSH_USER,
