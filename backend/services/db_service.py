@@ -13,25 +13,30 @@ def get_data():
     finally:
         close_connection(conn, server)
 
-def update_car_inpection_patrol_result(target_valid_id, inspection_site_id, target_id):
+def update_car_inpection_patrol_result(target_valid_id, inspection_site_id, target_id, is_patrolled):
     conn, server = get_connection()
     try:
+        # Ensure is_patrolled is an integer
+        is_patrolled = int(is_patrolled)
+
         with conn.cursor() as cursor:
             cursor.execute(
                 """UPDATE public.car_inspection
-                        SET updated_at = CURRENT_TIMESTAMP, target_valid_id = %s
-                    WHERE inspection_site_id = %s AND target_id = %s;
-                    """,
-                (target_valid_id, inspection_site_id, target_id)
+                   SET updated_at = CURRENT_TIMESTAMP, target_valid_id = %s, is_patrolled = %s
+                   WHERE inspection_site_id = %s AND target_id = %s;
+                """,
+                (target_valid_id, is_patrolled, inspection_site_id, target_id)
             )
             conn.commit()
             logging.info(f'update_car_inpection_patrol_result updated target_valid_id: {target_valid_id}, inspection_site_id: {inspection_site_id}, target_id: {target_id}')
-            return None
+            return True
     except Exception as e:
         logging.error(f'Error when updating update_car_inpection_patrol_result: {e}')
-        print(e) 
+        print(f'Error when updating update_car_inpection_patrol_result: {e}')
+        return False
     finally:
         close_connection(conn, server)
+
 
 def insert_data(payload):
     conn, server = get_connection()

@@ -41,10 +41,11 @@ def send_patrol(payload: dict):
             last_valid = last_valid-1
 
             logging.info(f"데이터 저장 완료: serial_id: {serial_id} 최종 valid 시리얼: {last_valid} 최종 시리얼 ID: {serial_id}{last_valid} 시도 횟수: {global_cnt}")
-            db_service.update_car_inpection_patrol_result(inspection_site_id=inspection_site_id, target_id=serial_id, target_valid_id=last_valid)
         else:
             logging.info(f"serial_id: {serial_id} valid 시리얼 없음")
         
+        db_service.update_car_inpection_patrol_result(inspection_site_id=inspection_site_id, target_id=serial_id, target_valid_id=last_valid, is_patrolled=1)
+
         return {"last_valid": last_valid, "global_cnt": global_cnt}
 
     except Exception as e:
