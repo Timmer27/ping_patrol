@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from controllers import my_controller, patrol_controller, inspection_controller
+from controllers import my_controller, patrol_controller, inspection_controller, crawling_controller
 
 app = FastAPI()
 
@@ -23,3 +23,4 @@ app.add_middleware(
 app.include_router(my_controller.router, prefix="/api/test")
 app.include_router(patrol_controller.router, prefix="/api/v1")
 app.include_router(inspection_controller.router, prefix="/api/v1/car")
+app.include_router(crawling_controller.router, prefix="/api/v1/car")

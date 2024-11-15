@@ -136,6 +136,7 @@ def fetch_crawling_list_data():
                         t1.done_status_count,
                         t1.fail_status_count,
                         t1.not_done_status_count
+                        -- t1.updated_at
                     --    ROUND(
                     --        CASE 
                     --            WHEN t1.total_patrolled_target_count > 0 
