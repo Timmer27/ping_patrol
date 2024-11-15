@@ -1,6 +1,8 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { Button, Form, Input, Table, Badge } from "antd";
 import axios from "axios";
+// import { useHistory } from "react-router-dom"; // Import useHistory for navigation
+import { useNavigate, useParams } from "react-router-dom";
 
 const EditableContext = React.createContext(null);
 
@@ -87,16 +89,16 @@ const EditableCell = ({
   return <td {...restProps}>{childNode}</td>;
 };
 
-const EditableTable = () => {
+const PatrolTable = () => {
   const [dataSource, setDataSource] = useState([]);
   const [count, setCount] = useState(0);
+  // const history = useHistory();
+  let navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch data from the endpoint when the component mounts
     axios
       .get("http://localhost:8000/api/v1/car/inspection_list")
       .then((response) => {
-        // Update the data source with the fetched data
         setDataSource(response.data);
         setCount(response.data.length);
       })
@@ -104,17 +106,6 @@ const EditableTable = () => {
         console.error("Error fetching inspection data:", error);
       });
   }, []);
-
-  const handleAdd = () => {
-    const newData = {
-      key: count,
-      name: `Edward King ${count}`,
-      age: "32",
-      address: `London, Park Lane no. ${count}`,
-    };
-    setDataSource([...dataSource, newData]);
-    setCount(count + 1);
-  };
 
   const handleSave = (row) => {
     const newData = [...dataSource];
@@ -148,12 +139,19 @@ const EditableTable = () => {
     {
       title: "hit_pct",
       dataIndex: "hit_pct",
+      render: (_, record) => `${(record.hit_pct * 100).toString()}%`
     },
     {
       title: "status",
       dataIndex: "status",
-      render: () => <Badge status="success" text="Finished" />,
-      // render: () => <Badge status="fail" text="Ongoing" />,
+      render: (_, record) => {
+        console.log("re", record);
+        if (record.hit_pct !== 1) {
+          return <Badge color="orange" text="Ongoing" />;
+        } else {
+          return <Badge status="success" text="Finished" />;
+        }
+      },
     },
   ].map((col) => {
     if (!col.editable) {
@@ -172,32 +170,26 @@ const EditableTable = () => {
   });
 
   return (
-    dataSource.length > 0 && (
-      <div>
-        {/* <Button
-        onClick={handleAdd}
-        type="primary"
-        style={{
-          marginBottom: 16,
+    <div>
+      <Table
+        components={{
+          body: {
+            row: EditableRow,
+            cell: EditableCell,
+          },
         }}
-      >
-        Add a row
-      </Button> */}
-        <Table
-          components={{
-            body: {
-              row: EditableRow,
-              cell: EditableCell,
-            },
-          }}
-          rowClassName={() => "editable-row"}
-          bordered
-          dataSource={dataSource}
-          columns={columns}
-        />
-      </div>
-    )
+        rowClassName={() => "editable-row"}
+        bordered
+        dataSource={dataSource}
+        columns={columns}
+        onRow={(record) => ({
+          onClick: () => {
+            navigate(`/patrol/${record.inspection_site_id}`);
+          },
+        })}
+      />
+    </div>
   );
 };
 
-export default EditableTable;
+export default PatrolTable;

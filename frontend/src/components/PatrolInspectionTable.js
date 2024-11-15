@@ -1,15 +1,27 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { Button, Form, Input, Table, Badge } from "antd";
+import { Button, Form, Input, Table, Badge, Dropdown, Space } from "antd";
 import axios from "axios";
+import { useParams } from "react-router-dom";
+import { DownOutlined } from "@ant-design/icons";
 
-const EditableTableTmp = () => {
+const PatrolInspectionTable = () => {
   const [dataSource, setDataSource] = useState([]);
   const [count, setCount] = useState(0);
+  const { id } = useParams();
+
+  const dropdownItems = [
+    { key: "1", label: "Target Valid Id Avaliable" },
+    { key: "2", label: "Patrol Done" },
+    { key: "3", label: "Ongoing" },
+    { key: "4", label: "Total" },
+  ];
+
+  const [selectedDropdown, setSelectedDropdown] = useState(dropdownItems[0]);
 
   useEffect(() => {
     // Fetch data from the endpoint when the component mounts
     axios
-      .get("http://localhost:8000/api/v1/car/inspection_list/14")
+      .get(`http://localhost:8000/api/v1/car/inspection_list/${id}`)
       .then((response) => {
         // Update the data source with the fetched data
         setDataSource(response.data);
@@ -47,24 +59,26 @@ const EditableTableTmp = () => {
   ];
 
   return (
-    dataSource.length > 0 && (
-      <div>
-        <Table
-          // className={styles.customTable}
-          columns={columns}
-          dataSource={dataSource}
-          pagination={{ pageSize: 30 }} // Set the number of rows per page
-          bordered
-          // pagination={{
-          //   pageSize: count,
-          // }}
-          // scroll={{
-          //   y: 55 * 5,
-          // }}
-        />
-      </div>
-    )
+    <div>
+      <Dropdown
+        menu={{ items: dropdownItems }}
+        trigger={["click"]}
+        // onClick={(e) => {
+        //   console.log(e);
+        // }}
+        disabled
+        className="flex self-end mb-3"
+      >
+        <Button>
+          <Space>
+            {selectedDropdown.label}
+            <DownOutlined />
+          </Space>
+        </Button>
+      </Dropdown>
+      <Table columns={columns} dataSource={dataSource} bordered />
+    </div>
   );
 };
 
-export default EditableTableTmp;
+export default PatrolInspectionTable;

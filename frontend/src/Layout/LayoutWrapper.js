@@ -1,14 +1,13 @@
-// ERDDesigner.js
+// LayoutWrapper.js
 import React, { useState } from "react";
-import { Layout, Button, Dropdown, Space } from "antd";
-import { DownOutlined } from "@ant-design/icons";
+import { Button, Dropdown, Layout, Space } from "antd";
 import Sidebar from "../components/Sidebar";
-import EditableTable from "../components/EditableTable";
-import EditableTableTmp from "../components/EditableTableTmp";
+import { Outlet, useParams } from "react-router-dom";
+import { DownOutlined } from "@ant-design/icons";
 
 const { Header, Content } = Layout;
 
-export default function MainPage() {
+export default function LayoutWrapper() {
   const [activeEntity, setActiveEntity] = useState("Patrol");
   const [zoomLevel, setZoomLevel] = useState(100);
   const [collapsed, setCollapsed] = useState(false);
@@ -20,7 +19,8 @@ export default function MainPage() {
   ];
 
   return (
-    <Layout className="h-screen">
+    <Layout className="h-screen min-h-[52rem]">
+      {/* Sidebar will stay fixed across all pages */}
       <Sidebar
         activeEntity={activeEntity}
         setActiveEntity={setActiveEntity}
@@ -33,8 +33,7 @@ export default function MainPage() {
       <Layout>
         <Header className="bg-white px-4 flex items-center justify-between">
           <h1 className="text-lg font-semibold">
-            TITLE:{" "}
-            {activeEntity.charAt(0).toUpperCase() + activeEntity.slice(1)}
+            ERP: {activeEntity.charAt(0).toUpperCase() + activeEntity.slice(1)}
           </h1>
           <Dropdown
             menu={{ items: dropdownItems }}
@@ -51,19 +50,8 @@ export default function MainPage() {
         </Header>
 
         <Content className="p-6 bg-gray-100">
-          <div
-            className="h-[calc(100vh-8rem)] w-full overflow-auto bg-white p-4 rounded-lg border"
-            style={{
-              transform: `scale(${zoomLevel / 100})`,
-              transformOrigin: "top left",
-            }}
-          >
-            {activeEntity === "Patrol" ? (
-              <EditableTableTmp />
-            ) : (
-              <EditableTable />
-            )}
-          </div>
+          {/* Outlet renders the nested route's element */}
+          <Outlet />
         </Content>
       </Layout>
     </Layout>

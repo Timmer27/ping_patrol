@@ -1,15 +1,8 @@
 // Sidebar.js
 import React from "react";
 import { Layout, Menu, Button, Slider, Space, Divider } from "antd";
-import {
-  DatabaseOutlined,
-  HomeOutlined,
-  // LayersOutlined,
-  FileOutlined,
-  SettingOutlined,
-  PlusOutlined,
-  DeleteOutlined,
-} from "@ant-design/icons";
+import { HomeOutlined, FileOutlined } from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
 
 const { Sider } = Layout;
 
@@ -22,8 +15,8 @@ const Sidebar = ({
   setCollapsed,
 }) => {
   const projectMenuItems = [
-    { key: "Patrol", icon: <FileOutlined />, label: "Patrol" },
-    { key: "Crawling", icon: <HomeOutlined />, label: "Crawling" },
+    { key: "patrol", icon: <FileOutlined />, label: "Patrol" },
+    { key: "crawling", icon: <HomeOutlined />, label: "Crawling" },
     // { key: "settings", icon: <SettingOutlined />, label: "Settings" },
     // { key: "settings", icon: <SettingOutlined />, label: "Settings" },
   ];
@@ -33,6 +26,8 @@ const Sidebar = ({
     { key: "posts", label: "Posts" },
     { key: "comments", label: "Comments" },
   ];
+
+  let navigate = useNavigate();
 
   return (
     <Sider
@@ -55,7 +50,11 @@ const Sidebar = ({
           mode="inline"
           theme="dark"
           items={projectMenuItems}
-          onClick={({ key }) => setActiveEntity(key)}
+          onClick={({ key }) => {
+            setActiveEntity(key);
+            console.log('key', key)
+            navigate(key);
+          }}
         />
       </div>
 
@@ -63,25 +62,11 @@ const Sidebar = ({
 
       <div className="px-4 py-2">
         <div className="text-gray-500 text-sm">Not Implemented</div>
-        {/* <Menu
-          mode="inline"
-          theme="dark"
-          selectedKeys={[activeEntity]}
-          // onClick={({ key }) => setActiveEntity(key)}
-          items={entityMenuItems}
-        /> */}
       </div>
 
-      <Divider style={{ borderColor: "rgba(255,255,255,0.1)" }} />
+      {/* <Divider style={{ borderColor: "rgba(255,255,255,0.1)" }} />
 
       <div className="px-4 py-2">
-        {/* <div className="text-gray-500 text-sm">Controls</div>
-        <div className="py-4">
-          <Space>
-            <Button icon={<PlusOutlined />} />
-            <Button icon={<DeleteOutlined />} />
-          </Space>
-        </div> */}
         <div>
           <div className="text-gray-500 text-sm mb-2">Zoom</div>
           <Slider
@@ -93,7 +78,7 @@ const Sidebar = ({
           />
           <div className="text-right">{zoomLevel}%</div>
         </div>
-      </div>
+      </div> */}
     </Sider>
   );
 };

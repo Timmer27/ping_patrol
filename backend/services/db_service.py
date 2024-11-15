@@ -113,15 +113,46 @@ def update_car_inpection_patrol_result(target_valid_id, inspection_site_id, targ
         close_connection(conn, server)
 
 
-def insert_data(payload):
+def fetch_crawling_list_data():
     conn, server = get_connection()
     try:
         with conn.cursor() as cursor:
             cursor.execute(
-                "INSERT INTO your_table (column1, column2) VALUES (%s, %s) RETURNING id;",
-                (payload["column1"], payload["column2"])
+                """
+                    WITH tmp AS (
+                        SELECT cc.inspection_site_id,
+                            COUNT(cc.status) AS total_status_count,
+                            COUNT(CASE WHEN cc.status = '1' THEN 1 END) AS done_status_count,
+                            COUNT(CASE WHEN cc.status = '0' THEN 1 END) AS fail_status_count,
+                            COUNT(CASE WHEN cc.status = '2' THEN 1 END) AS not_done_status_count
+                        FROM car_crawling cc
+                        GROUP BY cc.inspection_site_id
+                    )
+                    select
+                        cm.code_type AS car_english_name,
+                        cm.description AS description,
+                        t1.inspection_site_id,
+                        t1.total_status_count,
+                        t1.done_status_count,
+                        t1.fail_status_count,
+                        t1.not_done_status_count
+                    --    ROUND(
+                    --        CASE 
+                    --            WHEN t1.total_patrolled_target_count > 0 
+                    --            THEN (t1.patrolled_target_count::float / t1.total_patrolled_target_count)::numeric 
+                    --            ELSE 0
+                    --        END, 2
+                    --    ) AS hit_pct,
+                    FROM tmp t1
+                    JOIN code_mst cm ON t1.inspection_site_id = cm.code_mst_id
+                    ORDER BY t1.inspection_site_id
+                """
             )
-            conn.commit()
-            return cursor.fetchone()["id"]
+            data = cursor.fetchall()
+            return data
+    except Exception as e:
+        logging.error(f'Error when fetch_inspection_list_data: {e}')
+        print(f'Error when fetch_inspection_list_data: {e}')
+        return False
     finally:
         close_connection(conn, server)
